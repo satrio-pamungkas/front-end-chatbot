@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import { useFetch } from "../api/Response";
 
@@ -7,8 +7,10 @@ const responseList: any = [];
 
 export const Chatbot = () => {
     const [userMessage, setUserMessage] = useState('');
-    const [responseMessage, setResponseMessage] = useState('');
+    const [realMessage, setRealMessage] = useState('');
+    const [listResponse, setListResponse] = useState(responseList);
     const [listMessage, setListMessage] = useState(chatList);
+    const { items } = useFetch(realMessage);
 
     const handleChange = (e: any) => {
         setUserMessage(e.target.value);
@@ -16,32 +18,37 @@ export const Chatbot = () => {
 
     const handleSubmit = () => {
         const newList = listMessage.concat({ id: uuidv4(), message: userMessage });
-        receiveResponse();
         setListMessage(newList);
-        setUserMessage('');
+        addResponseList();
     }
 
-    const receiveResponse = () => {
-        const {data} = useFetch(userMessage);
-        console.log(data);
-
+    const addResponseList = () => {
+        const newList = listResponse.concat({ id: uuidv4(), message: items });
+        setListResponse(newList);
+        console.log(newList);
     }
+
+    useEffect(() => {
+        setRealMessage(userMessage);
+    }, [userMessage])
 
     return (
         <>
             <div className="relative w-full p-6 overflow-y-auto h-[25rem]">
                 <ul className="space-y-2">
-                    <li className="flex justify-start">
-                        <div className="relative max-w-md px-4 py-2 text-gray-700 rounded shadow">
-                            <span className="block">Hi</span>
-                        </div>
-                    </li>
                     {listMessage.map((item: any) => (
                         <li key={item.id} className="flex justify-end">
                             <div className="relative max-w-md px-4 py-2 text-gray-700 bg-gray-100 rounded shadow">
                                 <span className="block">{item.message}</span>
                             </div>
                         </li>
+                    ))}
+                    {listResponse.map((item: any) => (
+                        <li key={item.id} className="flex justify-start">
+                            <div className="relative max-w-md px-4 py-2 text-gray-700 rounded shadow">
+                                <span className="block">{item.message}</span>
+                            </div>
+                        </li> 
                     ))}
                 </ul>
             </div>

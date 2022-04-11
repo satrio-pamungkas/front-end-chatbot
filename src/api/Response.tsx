@@ -1,21 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
 export const useFetch = (msg: string) => {
-    const [data, setData] = useState(null);
+    const [items, setItems] = useState([]);
 
     useEffect(() => {
         axios.post('http://localhost:8000/', {
             message: msg
         })
         .then((response) => {
-            console.log(response.data);
-            setData(response.data);
+            setItems(response.data.data.message);
         })
         .catch((error) => {
             console.log(error);
         })
-    }, [])
+    }, [msg])
 
-    return {data}
+    return { items }
 }
