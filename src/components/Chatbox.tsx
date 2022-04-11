@@ -1,21 +1,30 @@
 import { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
+import { useFetch } from "../api/Response";
 
 const chatList: any = [];
+const responseList: any = [];
 
 export const Chatbot = () => {
     const [userMessage, setUserMessage] = useState('');
-    const [list, setList] = useState(chatList);
+    const [responseMessage, setResponseMessage] = useState('');
+    const [listMessage, setListMessage] = useState(chatList);
 
     const handleChange = (e: any) => {
         setUserMessage(e.target.value);
     }
 
     const handleSubmit = () => {
-        const newList = list.concat({ id: uuidv4(), message: userMessage });
-        setList(newList);
+        const newList = listMessage.concat({ id: uuidv4(), message: userMessage });
+        receiveResponse();
+        setListMessage(newList);
         setUserMessage('');
-        console.log(chatList);
+    }
+
+    const receiveResponse = () => {
+        const {data} = useFetch(userMessage);
+        console.log(data);
+
     }
 
     return (
@@ -27,7 +36,7 @@ export const Chatbot = () => {
                             <span className="block">Hi</span>
                         </div>
                     </li>
-                    {list.map((item: any) => (
+                    {listMessage.map((item: any) => (
                         <li key={item.id} className="flex justify-end">
                             <div className="relative max-w-md px-4 py-2 text-gray-700 bg-gray-100 rounded shadow">
                                 <span className="block">{item.message}</span>
