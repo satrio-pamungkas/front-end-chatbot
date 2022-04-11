@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect} from "react";
 import axios from "axios";
 
-export const useFetch = (msg: string) => {
+export const useFetch = (msg: string = '') => {
     const [items, setItems] = useState([]);
 
     useEffect(() => {
@@ -16,5 +16,5 @@ export const useFetch = (msg: string) => {
         })
     }, [msg])
 
-    return { items }
+    return { items };
 }

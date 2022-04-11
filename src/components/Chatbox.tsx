@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
-import { useFetch } from "../api/Response";
+import { useFetch } from "../api/useFetch";
+import axios from "axios";
 
 const chatList: any = [];
 const responseList: any = [];
 
 export const Chatbot = () => {
     const [userMessage, setUserMessage] = useState('');
-    const [realMessage, setRealMessage] = useState('');
+    const [realMessage, setRealMessage] = useState('intro');
+    // const [response, setResponse] = useState('');
     const [listResponse, setListResponse] = useState(responseList);
     const [listMessage, setListMessage] = useState(chatList);
     const { items } = useFetch(realMessage);
@@ -17,20 +19,30 @@ export const Chatbot = () => {
     }
 
     const handleSubmit = () => {
+        setRealMessage(userMessage);
         const newList = listMessage.concat({ id: uuidv4(), message: userMessage });
         setListMessage(newList);
-        addResponseList();
-    }
 
-    const addResponseList = () => {
-        const newList = listResponse.concat({ id: uuidv4(), message: items });
-        setListResponse(newList);
-        console.log(newList);
+        // axios.post('http://localhost:8000/', {
+        //     message: userMessage
+        // })
+        // .then((response) => {
+        //     setResponse(response.data.data.message);
+        // })
+        // .catch((error) => {
+        //     console.log(error);
+        // })
     }
 
     useEffect(() => {
-        setRealMessage(userMessage);
-    }, [userMessage])
+        const newList = listResponse.concat({ id: uuidv4(), message: items });
+        setListResponse(newList);
+    }, [items]);
+
+    // useEffect(() => {
+    //     const newList = listResponse.concat({ id: uuidv4(), message: response });
+    //     setListResponse(newList);
+    // }, [response]);
 
     return (
         <>
