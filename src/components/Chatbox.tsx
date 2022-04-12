@@ -1,18 +1,28 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import { useFetch } from "../api/useFetch";
-import axios from "axios";
 
 const chatList: any = [];
 const responseList: any = [];
 
+const style = [
+    {
+        li: 'flex justify-start',
+        div: 'relative max-w-md px-4 py-2 text-gray-700 rounded shadow'
+    },
+    {
+        li: 'flex justify-end',
+        div: 'relative max-w-md px-4 py-2 text-gray-700 bg-gray-100 rounded shadow'
+    }
+];
+
 export const Chatbot = () => {
     const [userMessage, setUserMessage] = useState('');
     const [realMessage, setRealMessage] = useState('intro');
-    // const [response, setResponse] = useState('');
     const [listResponse, setListResponse] = useState(responseList);
     const [listMessage, setListMessage] = useState(chatList);
     const { items } = useFetch(realMessage);
+    const scrollRef: any = useRef(null);
 
     const handleChange = (e: any) => {
         setUserMessage(e.target.value);
@@ -20,49 +30,41 @@ export const Chatbot = () => {
 
     const handleSubmit = () => {
         setRealMessage(userMessage);
-        const newList = listMessage.concat({ id: uuidv4(), message: userMessage });
+        const newList = listMessage.concat({ 
+            id: uuidv4(), 
+            message: userMessage, 
+            li: style[1].li, 
+            div: style[1].div });
         setListMessage(newList);
-
-        // axios.post('http://localhost:8000/', {
-        //     message: userMessage
-        // })
-        // .then((response) => {
-        //     setResponse(response.data.data.message);
-        // })
-        // .catch((error) => {
-        //     console.log(error);
-        // })
+        setUserMessage('');
     }
 
     useEffect(() => {
-        const newList = listResponse.concat({ id: uuidv4(), message: items });
-        setListResponse(newList);
+        const newList = listMessage.concat({ 
+            id: uuidv4(), 
+            message: items, 
+            li: style[0].li, 
+            div: style[0].div });
+        setListMessage(newList);
     }, [items]);
 
-    // useEffect(() => {
-    //     const newList = listResponse.concat({ id: uuidv4(), message: response });
-    //     setListResponse(newList);
-    // }, [response]);
+    useEffect(() => {
+        scrollRef.current.scrollIntoView({ behaviour: 'smooth' });
+    })
 
     return (
         <>
-            <div className="relative w-full p-6 overflow-y-auto h-[25rem]">
+            <div className="relative w-full p-6 overflow-y-scroll h-[25rem]">
                 <ul className="space-y-2">
                     {listMessage.map((item: any) => (
-                        <li key={item.id} className="flex justify-end">
-                            <div className="relative max-w-md px-4 py-2 text-gray-700 bg-gray-100 rounded shadow">
+                        <li key={item.id} className={item.li}>
+                            <div className={item.div}>
                                 <span className="block">{item.message}</span>
                             </div>
                         </li>
                     ))}
-                    {listResponse.map((item: any) => (
-                        <li key={item.id} className="flex justify-start">
-                            <div className="relative max-w-md px-4 py-2 text-gray-700 rounded shadow">
-                                <span className="block">{item.message}</span>
-                            </div>
-                        </li> 
-                    ))}
                 </ul>
+                <div ref={scrollRef}/>
             </div>
             <div className="flex items-center justify-between w-full p-3 border-t border-gray-300">
                 <input type="text" placeholder="Ketik Pesan" value={userMessage} onChange={handleChange}
