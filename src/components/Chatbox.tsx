@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { useFetch } from "../api/useFetch";
 
 const chatList: any = [];
-const responseList: any = [];
 
 const style = [
     {
@@ -19,7 +18,6 @@ const style = [
 export const Chatbot = () => {
     const [userMessage, setUserMessage] = useState('');
     const [realMessage, setRealMessage] = useState('intro');
-    const [listResponse, setListResponse] = useState(responseList);
     const [listMessage, setListMessage] = useState(chatList);
     const { items } = useFetch(realMessage);
     const scrollRef: any = useRef(null);
@@ -29,22 +27,32 @@ export const Chatbot = () => {
     }
 
     const handleSubmit = () => {
-        setRealMessage(userMessage);
+        if (userMessage === realMessage) {
+            setRealMessage(userMessage + " ");
+            // to make changes and trigger the hooks
+        } else {
+            setRealMessage(userMessage);
+        }
+
         const newList = listMessage.concat({ 
             id: uuidv4(), 
             message: userMessage, 
             li: style[1].li, 
             div: style[1].div });
+
         setListMessage(newList);
         setUserMessage('');
     }
 
     useEffect(() => {
+        const value: string = items.toString();
+        const data: any = value.split("/");
         const newList = listMessage.concat({ 
             id: uuidv4(), 
-            message: items, 
+            message: data[1],
             li: style[0].li, 
             div: style[0].div });
+
         setListMessage(newList);
     }, [items]);
 

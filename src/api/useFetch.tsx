@@ -9,7 +9,8 @@ export const useFetch = (msg: string = '') => {
             message: msg
         })
         .then((response) => {
-            setItems(response.data.data.message);
+            const value: any = response.data.responseId + response.data.data.message;
+            setItems(value);
         })
         .catch((error) => {
             console.log(error);
